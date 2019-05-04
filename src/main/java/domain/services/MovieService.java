@@ -3,6 +3,7 @@ package domain.services;
 import domain.Comment;
 import domain.Movie;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,26 +21,31 @@ public class MovieService {
         return null;
     }
 
-    public List<Movie> getAll() {
+    public List<Movie> getAllMovies() {
         return moviesDb;
     }
 
-    public Movie getById(int id) {
+    public Movie getMovieById(int id) {
         return getMovieFromDb(id);
     }
 
-    public void add(Movie movie) {
-        movie.setId(currentMoviesId++);
-        moviesDb.add(movie);
+    public boolean addMovie(Movie movie) {
+        if (!(movie.getName().isEmpty() || movie.getDescription().isEmpty())) {
+            movie.setId(currentMoviesId++);
+            moviesDb.add(movie);
+            return true;
+        }
+        return false;
     }
 
-    public void update(Movie movie) {
+    public void updateMovie(Movie movie) {
         for (Movie m : moviesDb) {
             if (movie.getId() == m.getId()) {
                 m.setName(movie.getName());
                 m.setDescription(movie.getDescription());
             }
         }
+
     }
 
     public List<Comment> getComments(int id) {
@@ -49,31 +55,41 @@ public class MovieService {
         return result.getComments();
     }
 
-    public void addComment(String commentStr, int id) {
+    public boolean addComment(String commentStr, int id) {
+        Movie result = getMovieFromDb(id);
+        if (result == null)
+            return false;
+
         Comment comment = new Comment(currentCommentsId, commentStr);
         currentCommentsId++;
-        Movie result = getMovieFromDb(id);
+
         result.addComment(comment);
+        return true;
     }
 
-    public void removeComment(int movieId, int commentId) {
+    public boolean removeComment(int movieId, int commentId) {
         Movie result = getMovieFromDb(movieId);
         if (result != null) {
             List<Comment> commentsList = result.getComments();
             for (int i = 0; i < commentsList.size(); i++) {
                 if (commentsList.get(i).getId() == commentId) {
                     commentsList.remove(i);
-                    break;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
-    public void rateMovie(int id, double rating) {
+    public Response rateMovie(int movieId, double rating) {
         if (!(rating > 5 || rating < 1)) {
-            Movie result = getMovieFromDb(id);
-            if (result != null)
+            Movie result = getMovieFromDb(movieId);
+            if (result != null) {
                 result.setRating(rating);
+                return Response.ok().build();
+            }
+            return Response.status(404).build();
         }
+        return Response.status(400).build();
     }
 }
