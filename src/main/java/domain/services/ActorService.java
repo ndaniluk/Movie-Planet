@@ -2,6 +2,7 @@ package domain.services;
 
 import domain.Actor;
 import domain.Movie;
+import rest.MovieResources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +40,25 @@ public class ActorService {
     public boolean addActorToMovie(int actorId, int movieId) {
         if (getActorById(actorId) == null)
             return false;
+        if (MovieResources.db.getMovieById(movieId) == null)
+            return false;
 
         getActorById(actorId).addMovieId(movieId);
+        MovieResources.db.getMovieById(movieId).addActorId(actorId);
         return true;
+    }
+
+    public List<Movie> getAllMoviesFromActor(int actorId) {
+        List<Movie> moviesListFromActor = new ArrayList<>();
+        Actor actor = getActorById(actorId);
+        if (actor == null)
+            return null;
+
+        for (int id : actor.getMoviesIdList()) {
+            Movie movie = MovieResources.db.getMovieById(id);
+            moviesListFromActor.add(MovieResources.db.getMovieById(id));
+        }
+        return moviesListFromActor;
     }
 
 }

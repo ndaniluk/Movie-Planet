@@ -11,7 +11,7 @@ import java.util.List;
 
 @Path("actors")
 public class ActorResources {
-    private static ActorService db = new ActorService();
+    public static ActorService db = new ActorService();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -45,4 +45,15 @@ public class ActorResources {
         return Response.status(404).build();
     }
 
+    @GET
+    @Path("/{id}/movies")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllMoviesFromActor(@PathParam("id") int actorId) {
+        List<Movie> moviesList = db.getAllMoviesFromActor(actorId);
+        if (moviesList != null)
+            return Response.ok(moviesList).build();
+        return Response.status(404).build();
+
+
+    }
 }

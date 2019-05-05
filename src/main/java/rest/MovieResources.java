@@ -12,7 +12,7 @@ import java.util.List;
 
 @Path("movies")
 public class MovieResources {
-    private MovieService db = new MovieService();
+    public static MovieService db = new MovieService();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -78,6 +78,16 @@ public class MovieResources {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response rateMovie(@PathParam("id") int movieId, double rating) {
         return db.rateMovie(movieId, rating); // 404 for incorrect movieId and 400 for incorrect rating
+    }
+
+    @GET
+    @Path("/{id}/actors")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllActorsFromMovie(@PathParam("id") int movieId) {
+        List<Actor> actorsList = db.getAllActorsFromMovie(movieId);
+        if (actorsList != null)
+            return Response.ok(actorsList).build();
+        return Response.status(404).build();
     }
 
 }

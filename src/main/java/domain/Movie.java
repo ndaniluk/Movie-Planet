@@ -42,10 +42,10 @@ public class Movie {
     }
 
     public void setRating(double rating) {
-        if (this.ratingsCount == 0){
+        if (this.ratingsCount == 0) {
             this.rating = rating;
             ratingsCount++;
-        } else{
+        } else {
             this.rating *= ratingsCount;
             ratingsCount++;
             this.rating += rating;

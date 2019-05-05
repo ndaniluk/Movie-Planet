@@ -1,7 +1,9 @@
 package domain.services;
 
+import domain.Actor;
 import domain.Comment;
 import domain.Movie;
+import rest.ActorResources;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -92,4 +94,18 @@ public class MovieService {
         }
         return Response.status(400).build();
     }
+
+    public List<Actor> getAllActorsFromMovie(int movieId) {
+        List<Actor> actorsListFromMovie = new ArrayList<>();
+        Movie movie = getMovieById(movieId);
+        if (movie == null)
+            return null;
+
+        for (int id : movie.getActorsIdList()) {
+            Actor actor = ActorResources.db.getActorById(id);
+            actorsListFromMovie.add(ActorResources.db.getActorById(id));
+        }
+        return actorsListFromMovie;
+    }
+
 }
